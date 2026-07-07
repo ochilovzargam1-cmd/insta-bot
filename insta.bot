@@ -1,0 +1,39 @@
+from telegram import Update
+from telegram.ext import Application, CommandHandler, MessageHandler, ContextTypes, filters
+import yt_dlp
+import os
+
+TOKEN = "8885888060:AAE9qhXPAnH1rdj7hxCexehHQGX7UUwgaqY"
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "📥 Instagram havolasini yuboring."
+    )
+
+async def download(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    url = update.message.text
+
+    try:
+        ydl_opts = {
+            "outtmpl": "video.%(ext)s"
+        }
+
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+
+        for file in os.listdir():
+            if file.startswith("video."):
+                await update.message.reply_video(video=open(file, "rb"))
+                os.remove(file)
+                break
+
+    except Exception:
+        await update.message.reply_text("❌ Videoni yuklab bo'lmadi.")
+
+app = Application.builder().token(TOKEN).build()
+
+app.add_handler(CommandHandler("start", start))
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMTelegram Instagram Downloader BotMAND, download))
+
+print("Bot ishga tushdi...")
+app.run_polling()
