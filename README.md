@@ -1,2 +1,2 @@
-# insta-bot
+# main.py
 Telegram Instagram Downloader Bot
